@@ -1,4 +1,4 @@
-import {DatePicker, Form, Input, Slider, Switch} from 'antd';
+import {DatePicker, Form, Input, InputNumber, Slider, Switch} from 'antd';
 import React from 'react';
 import {inputFieldTypes, newQuestionConfigKeys} from '.';
 
@@ -56,21 +56,29 @@ function QuestionConfig({selectedType, onConfigChange}) {
 								return (
 									<>
 										<Form.Item label='Min Value'>
-											<Input
+											<InputNumber
+												style={{
+													width: '100%',
+												}}
+												type='number'
 												onChange={(e) =>
 													onConfigChange(
 														newQuestionConfigKeys.min,
-														e.target.value
+														e
 													)
 												}
 											/>
 										</Form.Item>
 										<Form.Item label='Max Value'>
-											<Input
+											<InputNumber
+												style={{
+													width: '100%',
+												}}
+												type='number'
 												onChange={(e) =>
 													onConfigChange(
-														newQuestionConfigKeys.min,
-														e.target.value
+														newQuestionConfigKeys.max,
+														e
 													)
 												}
 											/>
@@ -97,7 +105,7 @@ function QuestionConfig({selectedType, onConfigChange}) {
 												style={{width: '100%'}}
 												onChange={(e) => {
 													onConfigChange(
-														newQuestionConfigKeys.min,
+														newQuestionConfigKeys.max,
 														e
 													);
 												}}

@@ -1,7 +1,19 @@
-import {InfoCircleOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, Card, Col, Divider, Form, Input, Row, Tooltip} from 'antd';
-import {useEffect, useState} from 'react';
-import {v4 as generate_id} from 'uuid';
+import { InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+	Button,
+	Card,
+	Col,
+	DatePicker,
+	Divider,
+	Form,
+	Input,
+	InputNumber,
+	Row,
+	Select,
+	Tooltip
+} from 'antd';
+import { useEffect, useState } from 'react';
+import { v4 as generate_id } from 'uuid';
 import QuestionConfig from './QuestionConfig';
 import SelectQueType from './SelectQueType';
 
@@ -23,7 +35,7 @@ export const newQuestionConfigKeys = {
 };
 
 const initialState = {
-	new: {status: false, config: null},
+	new: { status: false, config: null },
 	questions: [],
 };
 
@@ -33,7 +45,7 @@ export default function FormComp() {
 	const showInputOptions = () => {
 		setState((prev) => ({
 			...prev,
-			new: {status: true, config: null},
+			new: { status: true, config: null },
 		}));
 	};
 
@@ -53,7 +65,7 @@ export default function FormComp() {
 		};
 		setState((prev) => ({
 			...prev,
-			new: {status: false, config},
+			new: { status: false, config },
 		}));
 	};
 
@@ -62,7 +74,7 @@ export default function FormComp() {
 			...prev,
 			new: {
 				...prev.new,
-				config: {...prev.new.config, [changedProp]: newValue},
+				config: { ...prev.new.config, [changedProp]: newValue },
 			},
 		}));
 	};
@@ -107,20 +119,79 @@ export default function FormComp() {
 												'Label'
 											}
 										>
-											<Input
-												addonAfter={
-													state.new.config.info && (
-														<Tooltip
-															title={
-																state.new.config
-																	.info
-															}
-														>
-															<InfoCircleOutlined />
-														</Tooltip>
-													)
+											{(() => {
+												switch (state.new.config.type) {
+													case inputFieldTypes.text:
+														console.log(
+															inputFieldTypes
+														);
+														return (
+															<Input
+																addonAfter={AddOnAfter(
+																	state.new
+																		.config
+																		.info
+																)}
+															/>
+														);
+													case inputFieldTypes.number:
+														return (
+															<InputNumber
+																type='number'
+																style={{
+																	width: '100%',
+																}}
+																addonAfter={AddOnAfter(
+																	state.new
+																		.config
+																		.info
+																)}
+																min={Number(
+																	state.new
+																		.config
+																		.min
+																)}
+																max={Number(
+																	state.new
+																		.config
+																		.max
+																)}
+															/>
+														);
+													case inputFieldTypes.date:
+														return (
+															<DatePicker
+																style={{
+																	width: '100%',
+																}}
+																disabledDate={(
+																	current
+																) =>
+																	current.isAfter(
+																		state
+																			.new
+																			.config
+																			.max
+																	) ||
+																	current.isBefore(
+																		state
+																			.new
+																			.config
+																			.min
+																	)
+																}
+															/>
+														);
+													case inputFieldTypes.dropdown:
+														return (
+															<Select
+																style={{
+																	width: '100%',
+																}}
+															/>
+														);
 												}
-											/>
+											})()}
 										</Form.Item>
 									</Form>
 								</Col>
@@ -153,4 +224,16 @@ export default function FormComp() {
 	);
 }
 
+function AddOnAfter(info) {
+	return (
+		info && (
+			<Tooltip title={info}>
+				<InfoCircleOutlined />
+			</Tooltip>
+		)
+	);
+}
 // className = {`grid grid-cols-${12 / state.new.config.width}`}
+// addonAfter = {
+// state.new.config.
+// }
