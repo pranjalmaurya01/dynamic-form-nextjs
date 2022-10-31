@@ -32,6 +32,7 @@ export const newQuestionConfigKeys = {
 	min: 'min',
 	max: 'max',
 	width: 'width',
+	options: 'options',
 };
 
 const initialState = {
@@ -77,6 +78,47 @@ export default function FormComp() {
 				config: { ...prev.new.config, [changedProp]: newValue },
 			},
 		}));
+	};
+
+	const onConfigChangeAddOptions = (changedProp, newValueOrId, append) => {
+		switch (changedProp) {
+			case newQuestionConfigKeys.options:
+				if (append) {
+					const newOption = {
+						id: generate_id(),
+						label: newValueOrId,
+						value: newValueOrId,
+					};
+					setState((prev) => ({
+						...prev,
+						new: {
+							...prev.new,
+							config: {
+								...prev.new.config,
+								options: [
+									...prev.new.config.options,
+									newOption,
+								],
+							},
+						},
+					}));
+				} else {
+					setState((prev) => ({
+						...prev,
+						new: {
+							...prev.new,
+							config: {
+								...prev.new.config,
+								options: prev.new.config.options.filter(
+									(each) => each.id !== newValueOrId
+								),
+							},
+						},
+					}));
+				}
+
+				break;
+		}
 	};
 
 	useEffect(() => {
@@ -188,6 +230,11 @@ export default function FormComp() {
 																style={{
 																	width: '100%',
 																}}
+																options={
+																	state.new
+																		.config
+																		.options
+																}
 															/>
 														);
 												}
@@ -201,6 +248,8 @@ export default function FormComp() {
 						<QuestionConfig
 							onConfigChange={onConfigChange}
 							selectedType={state.new.config.type}
+							options={state.new.config.options}
+							onConfigChangeAddOptions={onConfigChangeAddOptions}
 						/>
 					</Card>
 				</div>
