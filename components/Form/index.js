@@ -1,19 +1,8 @@
-import { InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-	Button,
-	Card,
-	Col,
-	DatePicker,
-	Divider,
-	Form,
-	Input,
-	InputNumber,
-	Row,
-	Select,
-	Tooltip
-} from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Divider, message, Row, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { v4 as generate_id } from 'uuid';
+import Field from './Field';
 import QuestionConfig from './QuestionConfig';
 import SelectQueType from './SelectQueType';
 
@@ -66,7 +55,7 @@ export default function FormComp() {
 		};
 		setState((prev) => ({
 			...prev,
-			new: { status: false, config },
+			new: { status: true, config },
 		}));
 	};
 
@@ -121,8 +110,20 @@ export default function FormComp() {
 		}
 	};
 
+	const addQuestion = () => {
+		if (!state.new.config.question) {
+			return message.error('Please add a title for your question');
+		}
+
+		setState((prev) => ({
+			...prev,
+			new: { status: false, config: null },
+			questions: [...prev.questions, prev.new.config],
+		}));
+	};
+
 	useEffect(() => {
-		console.log(state.new.config);
+		console.log(state);
 	}, [state]);
 
 	return (
@@ -132,116 +133,20 @@ export default function FormComp() {
 					Dynamic Form
 				</h1>
 			</div>
-			{state.new.status && <SelectQueType addNewConfig={addNewConfig} />}
-			{!state.new.status && !!state.new.config && (
+			{state.new.status && !state.new.config && (
+				<SelectQueType addNewConfig={addNewConfig} />
+			)}
+			{state.new.status && !!state.new.config && (
 				<div className='mx-10'>
 					<Card
 						size='small'
 						title={`Step-2 ${state.new.config.type}`}
 					>
-						<div className=''>
+						<div>
 							<h4 className='text-lg underline'>Preview</h4>
 							<br />
 							<Row>
-								<Col md={state.new.config.width}>
-									<Form>
-										<Form.Item
-											rules={[
-												{
-													required:
-														state.new.config
-															.required,
-													message:
-														'Please input your username!',
-												},
-											]}
-											name='previewQuestion'
-											label={
-												state.new.config.question ??
-												'Label'
-											}
-										>
-											{(() => {
-												switch (state.new.config.type) {
-													case inputFieldTypes.text:
-														console.log(
-															inputFieldTypes
-														);
-														return (
-															<Input
-																addonAfter={AddOnAfter(
-																	state.new
-																		.config
-																		.info
-																)}
-															/>
-														);
-													case inputFieldTypes.number:
-														return (
-															<InputNumber
-																type='number'
-																style={{
-																	width: '100%',
-																}}
-																addonAfter={AddOnAfter(
-																	state.new
-																		.config
-																		.info
-																)}
-																min={Number(
-																	state.new
-																		.config
-																		.min
-																)}
-																max={Number(
-																	state.new
-																		.config
-																		.max
-																)}
-															/>
-														);
-													case inputFieldTypes.date:
-														return (
-															<DatePicker
-																style={{
-																	width: '100%',
-																}}
-																disabledDate={(
-																	current
-																) =>
-																	current.isAfter(
-																		state
-																			.new
-																			.config
-																			.max
-																	) ||
-																	current.isBefore(
-																		state
-																			.new
-																			.config
-																			.min
-																	)
-																}
-															/>
-														);
-													case inputFieldTypes.dropdown:
-														return (
-															<Select
-																style={{
-																	width: '100%',
-																}}
-																options={
-																	state.new
-																		.config
-																		.options
-																}
-															/>
-														);
-												}
-											})()}
-										</Form.Item>
-									</Form>
-								</Col>
+								<Field {...state.new.config} />
 							</Row>
 						</div>
 						<Divider />
@@ -254,35 +159,43 @@ export default function FormComp() {
 					</Card>
 				</div>
 			)}
-
 			<br />
 			<div className='flex justify-end mr-5'>
 				<div>
-					<Tooltip title='Add Next Element'>
-						<Button
-							type='primary'
-							icon={<PlusOutlined />}
-							onClick={showInputOptions}
-						/>
-					</Tooltip>
-					<Divider />
-					<Button>Clear Form</Button>
+					{!state.new.status && (
+						<Tooltip title='Add New'>
+							<Button
+								type='primary'
+								icon={<PlusOutlined />}
+								onClick={showInputOptions}
+							/>
+						</Tooltip>
+					)}
+					{state.new.config && (
+						<Button onClick={addQuestion}>Add Question</Button>
+					)}
+					{state.questions.length > 0 && <Button>Clear Form</Button>}
 				</div>
 			</div>
+			<br />
+			<br />
+			{state.questions.length > 0 && (
+				<div className='mx-10'>
+					<h4 className='text-lg underline text-center'>
+						Added Questions
+					</h4>
+					<Row>
+						{state.questions.map((eachQuestion, i) => (
+							<Field
+								qno={i + 1}
+								{...eachQuestion}
+								key={eachQuestion.id}
+								className='mt-10'
+							/>
+						))}
+					</Row>
+				</div>
+			)}
 		</>
 	);
 }
-
-function AddOnAfter(info) {
-	return (
-		info && (
-			<Tooltip title={info}>
-				<InfoCircleOutlined />
-			</Tooltip>
-		)
-	);
-}
-// className = {`grid grid-cols-${12 / state.new.config.width}`}
-// addonAfter = {
-// state.new.config.
-// }
