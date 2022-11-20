@@ -145,7 +145,7 @@ export default function FormComp() {
 						<div>
 							<h4 className='text-lg underline'>Preview</h4>
 							<br />
-							<Row>
+							<Row >
 								<Field {...state.new.config} />
 							</Row>
 						</div>
@@ -184,13 +184,15 @@ export default function FormComp() {
 					<h4 className='text-lg underline text-center'>
 						Added Questions
 					</h4>
-					<Row>
+					<br />
+					<Row
+						gutter={[16, 16]}
+					>
 						{state.questions.map((eachQuestion, i) => (
 							<Field
 								qno={i + 1}
 								{...eachQuestion}
 								key={eachQuestion.id}
-								className='mt-10'
 							/>
 						))}
 					</Row>

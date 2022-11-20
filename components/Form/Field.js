@@ -18,13 +18,28 @@ function Field({
   return (
     <Col md={width} className={className}>
       <h6 className='text-base'>
-        {required && <span className='text-red-500'>*</span>}Q {qno}){' '}
-        {question ?? 'Label'}
+        <span className='flex justify-between'>
+          <span>
+            {required && (
+              <span className='text-red-500 font-semibold'>
+                *
+              </span>
+            )}
+            <span className='font-semibold'>Q {qno})</span>
+            &nbsp;
+            {question?.length > 0 ? question : 'Label'}
+          </span>
+          {info?.length > 0 && (
+            <Tooltip title={info}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          )}
+        </span>
       </h6>
       {(() => {
         switch (type) {
           case inputFieldTypes.text:
-            return <Input addonAfter={AddOnAfter(info)} />;
+            return <Input />;
           case inputFieldTypes.number:
             return (
               <InputNumber
@@ -32,7 +47,6 @@ function Field({
                 style={{
                   width: '100%',
                 }}
-                addonAfter={AddOnAfter(info)}
                 min={Number(min)}
                 max={Number(max)}
               />
@@ -65,13 +79,3 @@ function Field({
 }
 
 export default Field;
-
-function AddOnAfter(info) {
-  return (
-    info && (
-      <Tooltip title={info}>
-        <InfoCircleOutlined />
-      </Tooltip>
-    )
-  );
-}
